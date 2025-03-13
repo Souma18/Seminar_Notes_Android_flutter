@@ -1,109 +1,189 @@
 import 'package:flutter/material.dart';
+import 'package:notes_project/model/note.dart';
+import 'package:notes_project/screens/note__creen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final List<Note> notes = [
+    Note(
+      1,
+      101,
+      "Ghi chú 1",
+      "Nội dung ghi chú 1",
+      DateTime.now(),
+      DateTime.now(),
+      null,
+      null,
+      null,
+    ),
+    Note(
+      2,
+      102,
+      "Ghi chú 2",
+      "Nội dung ghi chú 2",
+      DateTime.now(),
+      DateTime.now(),
+      null,
+      null,
+      "1234",
+    ), // Có passNote
+    Note(
+      3,
+      103,
+      "Ghi chú 3",
+      "Nội dung ghi chú 3",
+      DateTime.now(),
+      DateTime.now(),
+      null,
+      null,
+      null,
+    ),
+  ];
+
+  String searchQuery = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ghi Chú', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.blueAccent,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          // Thanh tìm kiếm
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Tìm kiếm ghi chú...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
+        title: TextField(
+          decoration: InputDecoration(
+            hintText: "Tìm kiếm ghi chú...",
+            border: InputBorder.none,
+            hintStyle: TextStyle(color: Colors.white70),
           ),
-          // Danh sách ghi chú
-          Expanded(
-            child: ListView.builder(
-              itemCount: 5, // Demo 5 ghi chú
-              itemBuilder: (context, index) {
-                return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ListTile(
-                    leading: Icon(Icons.note, color: Colors.blueAccent),
-                    title: Text(
-                      'Ghi chú $index',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text('Nội dung ghi chú $index...'),
-                    onTap: () {
-                      // Chuyển đến trang chỉnh sửa ghi chú
-                    },
-                  ),
-                );
+          style: TextStyle(color: Colors.white),
+          onChanged: (value) {
+            setState(() {
+              searchQuery = value;
+            });
+          },
+        ),
+        actions: [IconButton(icon: Icon(Icons.search), onPressed: () {})],
+      ),
+      body: ListView.builder(
+        itemCount: notes.length,
+        itemBuilder: (context, index) {
+          final note = notes[index];
+          if (searchQuery.isNotEmpty &&
+              !note.title.toLowerCase().contains(searchQuery.toLowerCase())) {
+            return SizedBox.shrink();
+          }
+          return Card(
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: ListTile(
+              leading: Icon(
+                note.passNote != null ? Icons.lock : Icons.note,
+                color: Colors.blueAccent,
+              ),
+              title: Text(note.title),
+              subtitle: Text(
+                note.passNote != null ? "🔒 Đã khóa" : note.content,
+              ),
+              onTap: () {
+                if (note.passNote != null) {
+                  _showUnlockDialog(context, note);
+                } else {
+                  _openNoteDetail(context, note);
+                }
               },
             ),
-          ),
-        ],
-      ),
-      // Floating Action Button mở rộng
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          _showBottomMenu(context);
+          );
         },
-        icon: Icon(Icons.add),
-        label: Text("Tạo mới"),
-        backgroundColor: Colors.blueAccent,
+      ),
+      floatingActionButton: FloatingActionButton(
+        // Nút mở menu
+        onPressed: () {
+          _showMenu();
+        },
+        child: Icon(Icons.menu),
       ),
     );
   }
 
-  // Hiển thị menu ở dưới cùng
-  void _showBottomMenu(BuildContext context) {
+  void _showMenu() {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Wrap(
+      builder:
+          (context) => Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.note_add, color: Colors.green),
-                title: Text('Thêm ghi chú'),
+                leading: Icon(Icons.add),
+                title: Text("Thêm ghi chú"),
                 onTap: () {
                   Navigator.pop(context);
                   // Chuyển đến trang thêm ghi chú
                 },
               ),
               ListTile(
-                leading: Icon(Icons.archive, color: Colors.orange),
-                title: Text('Kho lưu trữ'),
+                leading: Icon(Icons.archive),
+                title: Text("Kho lưu trữ"),
                 onTap: () {
                   Navigator.pop(context);
-                  // Chuyển đến kho lưu trữ
+                  // Mở kho lưu trữ
                 },
               ),
               ListTile(
-                leading: Icon(Icons.delete, color: Colors.red),
-                title: Text('Kho đã xóa'),
+                leading: Icon(Icons.delete),
+                title: Text("Kho đã xóa"),
                 onTap: () {
                   Navigator.pop(context);
-                  // Chuyển đến kho đã xóa
+                  // Mở kho đã xóa
                 },
               ),
             ],
           ),
-        );
-      },
+    );
+  }
+
+  // Hộp thoại nhập mật khẩu
+  void _showUnlockDialog(BuildContext context, Note note) {
+    String password = "";
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text("Mở khóa ghi chú"),
+            content: TextField(
+              obscureText: true,
+              decoration: InputDecoration(labelText: "Nhập mật khẩu"),
+              onChanged: (value) {
+                password = value;
+              },
+            ),
+            actions: [
+              TextButton(
+                child: Text("Hủy"),
+                onPressed: () => Navigator.pop(context),
+              ),
+              TextButton(
+                child: Text("Xác nhận"),
+                onPressed: () {
+                  if (password == note.passNote) {
+                    Navigator.pop(context);
+                    _openNoteDetail(context, note);
+                  } else {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text("Mật khẩu sai!")));
+                  }
+                },
+              ),
+            ],
+          ),
+    );
+  }
+
+  // Chuyển đến trang xem chi tiết ghi chú
+  void _openNoteDetail(BuildContext context, Note note) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NoteDetailScreen(note: note)),
     );
   }
 }
