@@ -1,31 +1,20 @@
 class Account {
-  int _accountId;
-  String _username;
+  int? _accountId;
+  String _email;
   String _password;
-  String _phoneNumber;
   String _fullName;
 
   // Constructor
-  Account(
-    this._accountId,
-    this._username,
-    this._password,
-    this._phoneNumber,
-    this._fullName,
-  );
-
+  Account( this._email, this._password, this._fullName,[this._accountId]);
   // Getter và Setter
-  int get accountId => _accountId;
-  set accountId(int id) => _accountId = id;
-
-  String get username => _username;
-  set username(String value) => _username = value;
+  int? get accountId => _accountId;
+  set accountId(int? id) => _accountId = id;
 
   String get password => _password;
   set password(String value) => _password = value;
 
-  String get phoneNumber => _phoneNumber;
-  set phoneNumber(String value) => _phoneNumber = value;
+  String get email => _email;
+  set email(String value) => _email = value;
 
   String get fullName => _fullName;
   set fullName(String value) => _fullName = value;
