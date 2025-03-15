@@ -14,7 +14,6 @@ class NoteListScreen extends StatefulWidget {
 class _NoteListScreenState extends State<NoteListScreen> {
   List<Note> notes = NoteData.getNotes();
 
-  // Cập nhật ghi chú khi có thay đổi
   void _updateNote(Note updatedNote) {
     setState(() {
       final index = notes.indexWhere(
@@ -26,7 +25,6 @@ class _NoteListScreenState extends State<NoteListScreen> {
     });
   }
 
-  // Thêm ghi chú mới
   void _addNewNote() async {
     final newNote = await Navigator.push(
       context,
@@ -35,11 +33,12 @@ class _NoteListScreenState extends State<NoteListScreen> {
             (context) => NoteDetailScreen(
               note: Note(
                 DateTime.now().millisecondsSinceEpoch,
-                101, // Giả định ID tài khoản
+                101,
                 '',
                 '',
                 DateTime.now(),
                 DateTime.now(),
+                null,
               ),
             ),
       ),
@@ -47,24 +46,65 @@ class _NoteListScreenState extends State<NoteListScreen> {
 
     if (newNote != null) {
       setState(() {
-        notes.insert(0, newNote); // Thêm ghi chú mới vào đầu danh sách
+        notes.insert(0, newNote);
       });
     }
   }
 
+  void _showUnlockDialog(BuildContext context, Note note) {
+    String password = "";
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text("Mở khóa ghi chú"),
+            content: TextField(
+              obscureText: true,
+              decoration: InputDecoration(labelText: "Nhập mật khẩu"),
+              onChanged: (value) {
+                password = value;
+              },
+            ),
+            actions: [
+              TextButton(
+                child: Text("Hủy"),
+                onPressed: () => Navigator.pop(context),
+              ),
+              TextButton(
+                child: Text("Xác nhận"),
+                onPressed: () {
+                  if (password == note.passNote) {
+                    Navigator.pop(context);
+                    _openNoteDetail(context, note);
+                  } else {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text("Mật khẩu sai!")));
+                  }
+                },
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _openNoteDetail(BuildContext context, Note note) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NoteDetailScreen(note: note)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Note> notes = NoteData.getNotes();
-
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
-      // Nền bao trọn cả màn hình, giảm màu xanh
       appBar: AppBar(
         title: const Text(
           "Ghi chú",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.blue.shade50, // Đồng bộ màu nền với màn hình
+        backgroundColor: Colors.blue.shade50,
         elevation: 0,
       ),
       body: Padding(
@@ -72,24 +112,30 @@ class _NoteListScreenState extends State<NoteListScreen> {
         child: GridView.builder(
           itemCount: notes.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Hiển thị 2 cột
+            crossAxisCount: 2,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            childAspectRatio: 0.9,
+            childAspectRatio: 0.8,
           ),
           itemBuilder: (context, index) {
-            return NoteItem(note: notes[index], onNoteUpdated: _updateNote);
+            return NoteItem(
+              note: notes[index],
+              onNoteUpdated: _updateNote,
+              onTap: () {
+                if (notes[index].passNote != null) {
+                  _showUnlockDialog(context, notes[index]);
+                } else {
+                  _openNoteDetail(context, notes[index]);
+                }
+              },
+            );
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addNewNote, //Mở màn hình tạo ghi chú mới
-        backgroundColor: Colors.lightBlue.shade100, // Màu nền xanh biển nhạt
-        child: const Icon(
-          Icons.add,
-          color: Colors.blue, // Màu xanh biển đậm
-          size: 32,
-        ),
+        onPressed: _addNewNote,
+        backgroundColor: Colors.lightBlue.shade100,
+        child: const Icon(Icons.add, color: Colors.blue, size: 32),
       ),
     );
   }

@@ -29,7 +29,8 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
   }
 
   void _saveNote() {
-    if (_titleController.text.isNotEmpty || _contentController.text.isNotEmpty) {
+    if (_titleController.text.isNotEmpty ||
+        _contentController.text.isNotEmpty) {
       final updatedNote = Note(
         widget.note.noteId,
         widget.note.accountId,
@@ -66,10 +67,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
           children: [
             TextField(
               controller: _titleController,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               decoration: const InputDecoration(
                 hintText: 'Tiêu đề',
                 border: InputBorder.none,

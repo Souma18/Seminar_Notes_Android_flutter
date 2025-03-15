@@ -1,28 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:notes_project/model/note.dart';
-import 'package:notes_project/screens/note__creen.dart';
 
 class NoteItem extends StatelessWidget {
   final Note note;
   final Function(Note) onNoteUpdated;
+  final VoidCallback onTap;
 
-  const NoteItem({super.key, required this.note, required this.onNoteUpdated});
+  const NoteItem({
+    super.key,
+    required this.note,
+    required this.onNoteUpdated,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async {
-        // Chờ kết quả cập nhật ghi chú
-        final updatedNote = await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => NoteDetailScreen(note: note)),
-        );
-
-        // Nếu ghi chú được cập nhật, gọi callback
-        if (updatedNote != null) {
-          onNoteUpdated(updatedNote);
-        }
-      },
+      onTap: onTap, // Sử dụng trực tiếp onTap được truyền từ NoteListScreen
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
@@ -30,7 +24,6 @@ class NoteItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Hiển thị tiêu đề ghi chú
               Text(
                 note.title,
                 style: const TextStyle(
@@ -41,8 +34,6 @@ class NoteItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
-
-              // Hiển thị nội dung ghi chú
               Text(
                 note.content,
                 style: const TextStyle(fontSize: 14),
@@ -50,8 +41,6 @@ class NoteItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const Spacer(),
-
-              // Icon ghim ở góc dưới bên phải
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
