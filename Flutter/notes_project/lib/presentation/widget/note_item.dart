@@ -3,64 +3,69 @@ import 'package:notes_project/model/note.dart';
 
 class NoteItem extends StatelessWidget {
   final Note note;
-  final Function(Note) onNoteUpdated;
   final VoidCallback onTap;
+  final ValueChanged<Note> onNoteUpdated;
 
   const NoteItem({
-    super.key,
+    Key? key,
     required this.note,
-    required this.onNoteUpdated,
     required this.onTap,
-  });
+    required this.onNoteUpdated,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Sử dụng trực tiếp onTap được truyền từ NoteListScreen
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                note.title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 5,
+              spreadRadius: 2,
+              offset: Offset(2, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Tiêu đề + Biểu tượng khóa (nếu có)
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    note.title,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                note.content,
-                style: const TextStyle(fontSize: 14),
+                if (note.passNote != null)
+                  Icon(Icons.lock, color: Colors.black),
+              ],
+            ),
+            SizedBox(height: 8),
+
+            Expanded(
+              child: Text(
+                note.passNote == null ? note.content : "••••••••••••••••••••",
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 14,
+                  color:
+                      note.passNote == null
+                          ? Colors.grey[600]
+                          : Colors.grey[400],
+                ),
               ),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Transform.rotate(
-                    angle: 50 * 3.1415927 / 180, // Nghiêng 50 độ
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.push_pin_outlined,
-                        color: Colors.blue,
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        // TODO: Xử lý ghim ghi chú ở đây
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
