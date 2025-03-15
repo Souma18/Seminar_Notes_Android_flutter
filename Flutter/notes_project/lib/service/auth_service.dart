@@ -1,20 +1,17 @@
-import 'package:notes_project/model/Account.dart';
+
+import 'package:notes_project/database/account_data.dart';
+import 'package:notes_project/model/account.dart';
 
 class AuthService {
-  int login(String email, String password) {
-    return 0;
+  int? login(String email, String password) {
+    return AccountData.login(email, password);
   }
 
   Account? createAccount(Account account) {
-    if(account.email == ""){
-      return null;
-    }else {
-      
-    }
-    return null;
+    return AccountData.createAccount(account);
   }
 
-  Account? getAccountById(int id) {
-    return null;
+  Account? getAccountById(int? id) {
+    return AccountData.getAccount(id);
   }
 }

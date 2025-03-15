@@ -49,4 +49,27 @@ class Note {
 
   DateTime? get deleteAt => _deleteAt;
   set deleteAt(DateTime? date) => _deleteAt = date;
+  Note copyWith({
+    int? noteId,
+    int? accountId,
+    String? title,
+    String? content,
+    int? pinIndex,
+    String? passNote,
+    DateTime? createAt,
+    DateTime? updateAt,
+    DateTime? deleteAt,
+  }) {
+    return Note(
+      noteId ?? _noteId,
+      accountId ?? _accountId,
+      title ?? _title,
+      content ?? _content,
+      createAt ?? _createAt,
+      updateAt ?? _updateAt,
+      deleteAt ?? _deleteAt,
+      pinIndex ?? _pinIndex,
+      passNote ?? _passNote,
+    );
+  }
 }

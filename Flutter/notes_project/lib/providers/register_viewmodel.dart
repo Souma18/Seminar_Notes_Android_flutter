@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notes_project/model/Account.dart';
+import 'package:notes_project/model/account.dart';
 import 'package:notes_project/service/auth_service.dart';
 
 class RegisterViewmodel extends ChangeNotifier {

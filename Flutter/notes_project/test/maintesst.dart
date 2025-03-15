@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:notes_project/routes/app_pages.dart';
+import 'package:notes_project/presentation/screen/notes/note_list_screens.dart';
 import 'package:notes_project/service/note_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -19,11 +18,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Ứng dụng Ghi Chú',
       theme: ThemeData(primarySwatch: Colors.blue),
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/login',
-      onGenerateRoute: AppPages.generateRoute,
+      home: NoteListScreen(),
     );
   }
 }
