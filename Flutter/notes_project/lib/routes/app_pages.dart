@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notes_project/presentation/screen/login/forgot_screen.dart';
 import 'package:notes_project/presentation/screen/login/login_screen.dart';
 import 'package:notes_project/presentation/screen/login/register_screen.dart';
+import 'package:notes_project/presentation/screen/notes/note_list_screens.dart';
 
 import 'app_routes.dart';
 
@@ -14,6 +15,8 @@ class AppPages {
         return MaterialPageRoute(builder: (_) => RegisterScreen());
       case AppRoutes.forgotPassword:
         return MaterialPageRoute(builder: (_) => ForgotPasswordScreen());
+      case AppRoutes.noteListScreen:
+        return MaterialPageRoute(builder: (_) => NoteListScreen());
       default:
         return MaterialPageRoute(
           builder:

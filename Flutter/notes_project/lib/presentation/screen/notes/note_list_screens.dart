@@ -13,7 +13,6 @@ class NoteListScreen extends StatefulWidget {
 
 class _NoteListScreenState extends State<NoteListScreen> {
   List<Note> notes = NoteData.getNotes();
-  List<Note> allNotes = NoteData.getNotes(); // Lưu danh sách gốc
   TextEditingController _searchController = TextEditingController();
 
   void _updateNote(Note updatedNote) {
@@ -23,14 +22,6 @@ class _NoteListScreenState extends State<NoteListScreen> {
       );
       if (index != -1) {
         notes[index] = updatedNote;
-      }
-
-      // Cập nhật danh sách gốc để tìm kiếm không bị mất dữ liệu
-      final originalIndex = allNotes.indexWhere(
-        (note) => note.noteId == updatedNote.noteId,
-      );
-      if (originalIndex != -1) {
-        allNotes[originalIndex] = updatedNote;
       }
     });
   }
@@ -57,7 +48,6 @@ class _NoteListScreenState extends State<NoteListScreen> {
     if (newNote != null) {
       setState(() {
         notes.insert(0, newNote);
-        allNotes.insert(0, newNote); // Cập nhật danh sách gốc
       });
     }
   }
@@ -68,29 +58,29 @@ class _NoteListScreenState extends State<NoteListScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text("Mở khóa ghi chú"),
+            title: Text("Mở khóa ghi chú"),
             content: TextField(
               obscureText: true,
-              decoration: const InputDecoration(labelText: "Nhập mật khẩu"),
+              decoration: InputDecoration(labelText: "Nhập mật khẩu"),
               onChanged: (value) {
                 password = value;
               },
             ),
             actions: [
               TextButton(
-                child: const Text("Hủy"),
+                child: Text("Hủy"),
                 onPressed: () => Navigator.pop(context),
               ),
               TextButton(
-                child: const Text("Xác nhận"),
+                child: Text("Xác nhận"),
                 onPressed: () {
                   if (password == note.passNote) {
                     Navigator.pop(context);
                     _openNoteDetail(context, note);
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Mật khẩu sai!")),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text("Mật khẩu sai!")));
                   }
                 },
               ),
@@ -99,24 +89,20 @@ class _NoteListScreenState extends State<NoteListScreen> {
     );
   }
 
-  void _openNoteDetail(BuildContext context, Note note) async {
-    final updatedNote = await Navigator.push(
+  void _openNoteDetail(BuildContext context, Note note) {
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => NoteDetailScreen(note: note)),
     );
-
-    if (updatedNote != null) {
-      _updateNote(updatedNote);
-    }
   }
 
   void _searchNotes(String query) {
     setState(() {
       if (query.isEmpty) {
-        notes = List.from(allNotes); // Trả về danh sách đầy đủ
+        notes = NoteData.getNotes(); // Trả về tất cả ghi chú
       } else {
         notes =
-            allNotes
+            NoteData.getNotes()
                 .where(
                   (note) =>
                       note.title.toLowerCase().contains(query.toLowerCase()),
@@ -144,10 +130,10 @@ class _NoteListScreenState extends State<NoteListScreen> {
                 onChanged: _searchNotes,
                 decoration: InputDecoration(
                   hintText: "Tìm kiếm...",
-                  prefixIcon: const Icon(Icons.search, color: Colors.blue),
+                  prefixIcon: Icon(Icons.search, color: Colors.blue),
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 5),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,

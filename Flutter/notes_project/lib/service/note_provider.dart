@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes_project/database/note_data.dart';
 import 'package:notes_project/model/note.dart';
+import 'dart:convert';
 
 class NoteProvider extends ChangeNotifier {
   List<Note> _notes = []; // Danh sách ghi chú hiển thị
@@ -47,7 +48,8 @@ class NoteProvider extends ChangeNotifier {
     if (noteIndex != -1) {
       _notes[noteIndex] = oldNote.copyWith(
         title: newTitle,
-        content: newContent,
+
+        content: jsonDecode(newContent) as List<Map<String, dynamic>>,
         updateAt: DateTime.now(),
       );
       notifyListeners();

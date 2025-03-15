@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       title: 'Ứng dụng Ghi Chú',
       theme: ThemeData(primarySwatch: Colors.blue),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/login',
+      initialRoute: '/note-list',
       onGenerateRoute: AppPages.generateRoute,
     );
   }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:notes_project/model/note.dart';
 
 class NoteData {
@@ -6,7 +7,7 @@ class NoteData {
       1,
       101,
       "Lịch họp nhóm",
-      "Cuộc họp dự án Flutter vào 14h thứ Sáu.",
+      jsonEncode([{"insert": "Cuộc họp dự án Flutter vào 14h thứ Sáu.\n"}]),
       DateTime(2024, 3, 1, 10, 0),
       DateTime(2024, 3, 2, 15, 30),
     ),
@@ -14,7 +15,7 @@ class NoteData {
       2,
       102,
       "Mật khẩu WiFi",
-      "WiFi thư viện: Library_5G, mật khẩu: 987654321.",
+      jsonEncode([{"insert": "WiFi thư viện: Library_5G, mật khẩu: 987654321.\n"}]),
       DateTime(2024, 2, 20, 9, 0),
       DateTime(2024, 2, 21, 10, 30),
       null,
@@ -24,7 +25,9 @@ class NoteData {
       3,
       103,
       "Danh sách mua sắm",
-      "- Sữa\n- Bánh mì\n- Trứng\n- Nước cam",
+      jsonEncode([
+        {"insert": "- Sữa\n- Bánh mì\n- Trứng\n- Nước cam\n"}
+      ]),
       DateTime(2024, 3, 5, 18, 0),
       DateTime(2024, 3, 5, 19, 15),
     ),
@@ -32,7 +35,7 @@ class NoteData {
       4,
       104,
       "Thông tin tài khoản",
-      "Ngân hàng ABC, số tài khoản: 1234567890.",
+      jsonEncode([{"insert": "Ngân hàng ABC, số tài khoản: 1234567890.\n"}]),
       DateTime(2024, 1, 10, 11, 20),
       DateTime(2024, 2, 10, 12, 45),
       null,
@@ -43,7 +46,9 @@ class NoteData {
       5,
       105,
       "Lịch tập thể dục",
-      "Chạy bộ: 6h - 6h30\nTập gym: 18h - 19h",
+      jsonEncode([
+        {"insert": "Chạy bộ: 6h - 6h30\nTập gym: 18h - 19h\n"}
+      ]),
       DateTime(2024, 3, 10, 6, 0),
       DateTime(2024, 3, 10, 6, 30),
     ),
@@ -51,7 +56,7 @@ class NoteData {
       6,
       106,
       "Công thức món ăn",
-      "Cách làm bánh pancake: trứng, sữa, bột mì, đường...",
+      jsonEncode([{"insert": "Cách làm bánh pancake: trứng, sữa, bột mì, đường...\n"}]),
       DateTime(2024, 2, 5, 15, 45),
       DateTime(2024, 2, 6, 16, 30),
       DateTime(2024, 3, 1), // Đã xóa
@@ -60,7 +65,7 @@ class NoteData {
       7,
       107,
       "Dự án lập trình",
-      "Cần hoàn thành chức năng login trước thứ 4.",
+      jsonEncode([{"insert": "Cần hoàn thành chức năng login trước thứ 4.\n"}]),
       DateTime(2024, 3, 8, 13, 0),
       DateTime(2024, 3, 8, 17, 20),
     ),
@@ -68,7 +73,11 @@ class NoteData {
       8,
       108,
       "Danh sách việc cần làm",
-      "- Hoàn thành báo cáo.\n- Nộp bài tập nhóm.\n- Đi họp phụ huynh.",
+      jsonEncode([
+        {"insert": "- Hoàn thành báo cáo.\n"},
+        {"insert": "- Nộp bài tập nhóm.\n"},
+        {"insert": "- Đi họp phụ huynh.\n"}
+      ]),
       DateTime(2024, 3, 9, 8, 0),
       DateTime(2024, 3, 9, 9, 30),
       null,
@@ -84,11 +93,6 @@ class NoteData {
   static void addNote(Note note) {
     notes.add(note); // Thêm vào danh sách
   }
-
-  // Tìm ghi chú theo ID
-  // static Note? getNoteById(int id) {
-  //   return notes.firstWhere((note) => note.noteId == id, orElse: () => null);
-  // }
 
   // Cập nhật ghi chú
   static void updateNote(Note updatedNote) {
