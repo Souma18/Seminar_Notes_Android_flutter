@@ -13,6 +13,7 @@ class NoteListScreen extends StatefulWidget {
 
 class _NoteListScreenState extends State<NoteListScreen> {
   List<Note> notes = NoteData.getNotes();
+  TextEditingController _searchController = TextEditingController();
 
   void _updateNote(Note updatedNote) {
     setState(() {
@@ -95,14 +96,52 @@ class _NoteListScreenState extends State<NoteListScreen> {
     );
   }
 
+  void _searchNotes(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        notes = NoteData.getNotes(); // Trả về tất cả ghi chú
+      } else {
+        notes =
+            NoteData.getNotes()
+                .where(
+                  (note) =>
+                      note.title.toLowerCase().contains(query.toLowerCase()),
+                )
+                .toList();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
       appBar: AppBar(
-        title: const Text(
-          "Ghi chú",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Row(
+          children: [
+            const Text(
+              "Ghi chú",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: TextField(
+                controller: _searchController,
+                onChanged: _searchNotes,
+                decoration: InputDecoration(
+                  hintText: "Tìm kiếm...",
+                  prefixIcon: Icon(Icons.search, color: Colors.blue),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.symmetric(vertical: 5),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         backgroundColor: Colors.blue.shade50,
         elevation: 0,
