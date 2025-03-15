@@ -13,12 +13,14 @@ class NoteDetailScreen extends StatefulWidget {
 class _NoteDetailScreenState extends State<NoteDetailScreen> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
+  String? _passNote; // Biến để lưu mật khẩu tạm thời
 
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.note.title);
     _contentController = TextEditingController(text: widget.note.content);
+    _passNote = widget.note.passNote; // Khởi tạo mật khẩu từ note ban đầu
   }
 
   @override
@@ -37,12 +39,111 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
         _titleController.text,
         _contentController.text,
         widget.note.createAt,
-        DateTime.now(), // Cập nhật thời gian sửa đổi
+        DateTime.now(),
+        widget.note.deleteAt,
+        widget.note.pinIndex,
+        _passNote,
       );
-      Navigator.pop(context, updatedNote); // Trả kết quả về màn hình chính
+      Navigator.pop(context, updatedNote);
     } else {
-      Navigator.pop(context); // Không lưu nếu không có nội dung
+      Navigator.pop(context);
     }
+  }
+
+  void _managePassword() {
+    if (_passNote == null) {
+      _showSetPasswordDialog();
+    } else {
+      _showRemovePasswordDialog();
+    }
+  }
+
+  void _showSetPasswordDialog() {
+    String newPassword = '';
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Đặt mật khẩu"),
+            content: TextField(
+              obscureText: true,
+              decoration: const InputDecoration(labelText: "Nhập mật khẩu mới"),
+              onChanged: (value) {
+                newPassword = value;
+              },
+            ),
+            actions: [
+              TextButton(
+                child: const Text("Hủy"),
+                onPressed: () => Navigator.pop(context),
+              ),
+              TextButton(
+                child: const Text("Xác nhận"),
+                onPressed: () {
+                  if (newPassword.isNotEmpty) {
+                    setState(() {
+                      _passNote = newPassword;
+                    });
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Đã đặt mật khẩu!")),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Mật khẩu không được để trống!"),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showRemovePasswordDialog() {
+    String passwordInput = '';
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Gỡ mật khẩu"),
+            content: TextField(
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: "Nhập mật khẩu hiện tại",
+              ),
+              onChanged: (value) {
+                passwordInput = value;
+              },
+            ),
+            actions: [
+              TextButton(
+                child: const Text("Hủy"),
+                onPressed: () => Navigator.pop(context),
+              ),
+              TextButton(
+                child: const Text("Xác nhận"),
+                onPressed: () {
+                  if (passwordInput == _passNote) {
+                    setState(() {
+                      _passNote = null;
+                    });
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Đã gỡ mật khẩu!")),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Mật khẩu sai!")),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+    );
   }
 
   @override
@@ -55,8 +156,15 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
         ),
         actions: [
           IconButton(
+            icon: Icon(
+              _passNote == null ? Icons.lock_open : Icons.lock,
+              color: _passNote == null ? Colors.grey : Colors.red,
+            ),
+            onPressed: _managePassword, // Gọi hàm quản lý mật khẩu
+          ),
+          IconButton(
             icon: const Icon(Icons.check, color: Colors.green),
-            onPressed: _saveNote, // Lưu khi ấn vào dấu tích
+            onPressed: _saveNote,
           ),
         ],
       ),
@@ -82,7 +190,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                   hintText: 'Nội dung ghi chú...',
                   border: InputBorder.none,
                 ),
-                maxLines: null, // Cho phép nhập nhiều dòng
+                maxLines: null,
                 keyboardType: TextInputType.multiline,
               ),
             ),
