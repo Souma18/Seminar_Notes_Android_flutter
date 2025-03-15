@@ -16,6 +16,7 @@ class LoginScreen extends StatelessWidget {
         builder: (context, viewModel, child) {
           return Scaffold(
             body: Container(
+              alignment:  Alignment.center,
               color: Colors.blue.shade50,
               child: SafeArea(
                 child: CustomForm(

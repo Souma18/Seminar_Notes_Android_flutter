@@ -5,16 +5,19 @@ class LoginViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  
+
   String? errorMessage;
 
   void login(BuildContext context) {
-    int result = _authService.login(emailController.text, passwordController.text);
+    int? result = _authService.login(
+      emailController.text,
+      passwordController.text,
+    );
     if (result != 0) {
       Navigator.pushNamed(context, '/home');
     } else {
       errorMessage = "Đăng nhập thất bại";
-      notifyListeners(); 
+      notifyListeners();
     }
   }
 
