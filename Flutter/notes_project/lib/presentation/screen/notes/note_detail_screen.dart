@@ -1,5 +1,9 @@
+// import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 import 'package:notes_project/model/note.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'dart:convert'; // Để chuyển đổi JSON
 
 class NoteDetailScreen extends StatefulWidget {
   final Note note;
@@ -12,38 +16,59 @@ class NoteDetailScreen extends StatefulWidget {
 
 class _NoteDetailScreenState extends State<NoteDetailScreen> {
   late TextEditingController _titleController;
-  late TextEditingController _contentController;
+  // late TextEditingController _contentController;
+  final quill.QuillController _controller = quill.QuillController.basic();
 
   @override
   void initState() {
     super.initState();
+    _loadContent(); // 📌 Khi mở app, tải nội dung lên Quill
     _titleController = TextEditingController(text: widget.note.title);
     // _contentController = TextEditingController(text: widget.note.content);
+  }
+
+  void _loadContent() {
+    // load content từ model
+    final List<dynamic> data = jsonDecode(jsonEncode(widget.note.content)); // ✅ Chuyển về List hợp lệ
+    final document = quill.Document.fromJson(data.cast<Map<String, dynamic>>());
+
+    // final document = quill.Document.fromJson(data["document"]);
+
+    setState(() {
+      _controller.document = document; // Cập nhật trực tiếp nội dung của controller
+    });
+    // print("Nội dung đã tải lên Quill!");
   }
 
   @override
   void dispose() {
     _titleController.dispose();
-    _contentController.dispose();
+    // _contentController.dispose();
     super.dispose();
   }
 
   void _saveNote() {
-    if (_titleController.text.isNotEmpty ||
-        _contentController.text.isNotEmpty) {
+    if (!_controller.document.isEmpty()) {
+      final contentJson = jsonEncode(_controller.document.toDelta().toJson());
+      print("Nội dung lưu: $contentJson"); // Kiểm tra nội dung
+
       final updatedNote = Note(
         widget.note.noteId,
         widget.note.accountId,
         _titleController.text,
-        _contentController.text,
+        contentJson,
         widget.note.createAt,
-        DateTime.now(), // Cập nhật thời gian sửa đổi
+        DateTime.now(),
       );
-      Navigator.pop(context, updatedNote); // Trả kết quả về màn hình chính
+
+      Navigator.pop(context, updatedNote); // Trả dữ liệu về màn hình trước
     } else {
-      Navigator.pop(context); // Không lưu nếu không có nội dung
+      print("⚠️ Nội dung trống, không lưu.");
+      Navigator.pop(context);
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -73,17 +98,56 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                 border: InputBorder.none,
               ),
             ),
-            const SizedBox(height: 12),
+            quill.QuillToolbar.simple(
+              configurations: quill.QuillSimpleToolbarConfigurations(
+                controller: _controller,
+                showBoldButton: true,
+                showItalicButton: true,
+                showUnderLineButton: true,
+                showColorButton: true,
+
+                // Tắt tất cả các nút khác
+                showAlignmentButtons: false,
+                showFontSize: false,
+                showFontFamily: false,
+                showBackgroundColorButton: false,
+                showListBullets: false,
+                showListNumbers: false,
+                showCodeBlock: false,
+                showStrikeThrough: false,
+                showHeaderStyle: false,
+                showIndent: false,
+                showInlineCode: false,
+                showDividers: false,
+                showSearchButton: false,
+                showUndo: false,
+                showRedo: false,
+                showLink: false,
+                showSubscript: false,
+                showSuperscript: false,
+                showClearFormat: false,
+                showDirection: false,
+                showJustifyAlignment: false,
+                showCenterAlignment: false,
+                showLeftAlignment: false,
+                showRightAlignment: false,
+                showClipboardCut: false,
+                showClipboardCopy: false,
+                showClipboardPaste: false,
+              ),
+            ),
             Expanded(
-              child: TextField(
-                controller: _contentController,
-                style: const TextStyle(fontSize: 16),
-                decoration: const InputDecoration(
-                  hintText: 'Nội dung ghi chú...',
-                  border: InputBorder.none,
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: quill.QuillEditor(
+                  configurations: quill.QuillEditorConfigurations(
+                    controller: _controller,
+                    enableInteractiveSelection: true,
+                    padding: EdgeInsets.all(8),
+                  ),
+                  focusNode: FocusNode(),
+                  scrollController: ScrollController(),
                 ),
-                maxLines: null, // Cho phép nhập nhiều dòng
-                keyboardType: TextInputType.multiline,
               ),
             ),
           ],

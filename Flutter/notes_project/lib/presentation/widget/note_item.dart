@@ -53,13 +53,14 @@ class NoteItem extends StatelessWidget {
                   Transform.rotate(
                     angle: 50 * 3.1415927 / 180, // Nghiêng 50 độ
                     child: IconButton(
-                      icon: const Icon(
+                      icon:  Icon(
                         Icons.push_pin_outlined,
-                        color: Colors.blue,
+                        color: ( note.pinIndex==0) ? Colors.red : Colors.blue,
                         size: 20,
                       ),
                       onPressed: () {
                         // TODO: Xử lý ghim ghi chú ở đây
+                     onNoteUpdated(note.copyWith(updateAt: DateTime.now(),pinIndex: note.pinIndex == 0 ? 1 : 0));
                       },
                     ),
                   ),

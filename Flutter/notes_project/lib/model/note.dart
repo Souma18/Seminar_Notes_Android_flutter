@@ -55,6 +55,8 @@ class Note {
   set content(List<Map<String, dynamic>> value) {
     _contentJson = jsonEncode(value);
   }
+  int? get pinIndex => _pinIndex;
+  set pinIndex(int? value) => _pinIndex = value;
 
   DateTime get createAt => _createAt;
   set createAt(DateTime date) => _createAt = date;

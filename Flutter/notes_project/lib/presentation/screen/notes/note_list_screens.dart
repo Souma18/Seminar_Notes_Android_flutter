@@ -17,14 +17,21 @@ class _NoteListScreenState extends State<NoteListScreen> {
 
   void _updateNote(Note updatedNote) {
     setState(() {
-      final index = notes.indexWhere(
-        (note) => note.noteId == updatedNote.noteId,
-      );
+      final index = notes.indexWhere((note) => note.noteId == updatedNote.noteId);
       if (index != -1) {
         notes[index] = updatedNote;
       }
+
+      // Sắp xếp lại danh sách
+      notes.sort((a, b) {
+        if (a.pinIndex == b.pinIndex) {
+          return b.updateAt.compareTo(a.updateAt);
+        }
+        return a.pinIndex==1 ? 1 : 0;
+      });
     });
   }
+
 
   void _addNewNote() async {
     final newNote = await Navigator.push(
@@ -89,12 +96,17 @@ class _NoteListScreenState extends State<NoteListScreen> {
     );
   }
 
-  void _openNoteDetail(BuildContext context, Note note) {
-    Navigator.push(
+  void _openNoteDetail(BuildContext context, Note note) async {
+    final updatedNote = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => NoteDetailScreen(note: note)),
     );
+
+    if (updatedNote != null) {
+      _updateNote(updatedNote);
+    }
   }
+
 
   void _searchNotes(String query) {
     setState(() {
